@@ -5,8 +5,7 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
-
-import "./libraries/Base64.sol";
+import "@openzeppelin/contracts/utils/Base64.sol";
 
 import "hardhat/console.sol";
 
@@ -19,6 +18,16 @@ contract MyEpicGame is ERC721 {
         uint256 maxHp;
         uint256 attackDamage;
     }
+
+    struct BigBoss {
+        string name;
+        string imageURI;
+        uint hp;
+        uint maxHp;
+        uint attackDamage;
+    }
+
+    BigBoss public bigBoss;
 
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
@@ -35,13 +44,32 @@ contract MyEpicGame is ERC721 {
         string[] memory characterNames,
         string[] memory characterImageURIs,
         uint256[] memory characterHp,
-        uint256[] memory characterAttackDamage
+        uint256[] memory characterAttackDamage,
+        string memory bossName,
+        string memory bossImageURI,
+        uint bossHp,
+        uint bossAttackDamage
     ) 
 
     ERC721("Heroes", "HERO") 
     
     {
-        for (uint256 i = 0; i < characterNames.length; i++) {
+        bigBoss = BigBoss({
+            name: bossName,
+            imageURI: bossImageURI,
+            hp: bossHp,
+            maxHp: bossHp,
+            attackDamage: bossAttackDamage
+        });
+
+        console.log(
+            "Boss iniciado: %s - %s/%s", 
+            bigBoss.name, 
+            bigBoss.hp,
+            bigBoss.attackDamage
+        );
+        
+        for(uint256 i = 0; i < characterNames.length; i++) {
             defaultCharacters.push(
                 CharacterAttributes({
                     characterIndex: i,
@@ -55,10 +83,10 @@ contract MyEpicGame is ERC721 {
 
             CharacterAttributes memory c = defaultCharacters[i];
             console.log(
-                "Personagem iniciado: %s com %s de HP, img %s",
+                "Personagem iniciado: %s - %s/%s",
                 c.name,
                 c.hp,
-                c.imageURI
+                c.attackDamage
             );
         }
         _tokenIds.increment();
@@ -114,5 +142,46 @@ contract MyEpicGame is ERC721 {
         nftHolders[msg.sender] = newItemId;
 
         _tokenIds.increment();
+    }
+
+    function attackBoss() public {
+        // Pega o estado do NFT do jogador
+        uint256 nftTokenIdOfPlayer = nftHolders[msg.sender];
+        CharacterAttributes storage player = nftHolderAttributes[nftTokenIdOfPlayer];
+        console.log("\nJogador com o personagem %s ira atacar. tem %s de HP e %s de ataque",
+            player.name,
+            player.hp,
+            player.attackDamage
+        );
+        console.log("O Boss %s tem %s de HP e %s de ataque",
+            bigBoss.name,
+            bigBoss.hp,
+            bigBoss.attackDamage
+        );
+        // Tenha certeza que o jogador tenha mais que 0 de HP
+        require (
+            player.hp > 0,
+            "Error: O personagem nao tem HP suficiente para atacar o boss"
+        );
+        // Tenha certeza de que o boss tenha mais que 0 de HP
+        require (
+            bigBoss.hp > 0,
+            "Error: O boss nao tem HP suficiente para atacar o jogador"
+        );
+        // Permita que o jogador ataque o boss
+        if(bigBoss.hp < player.attackDamage) {
+            bigBoss.hp = 0;
+        } else {
+            bigBoss.hp = bigBoss.hp - player.attackDamage;
+        }
+        // Permita que o boss ataque o jogador
+        if(player.hp > bigBoss.attackDamage) {
+            player.hp = 0;
+        } else {
+            player.hp = player.hp - bigBoss.attackDamage;
+        }
+
+        console.log("Personagemr atacou o Boss. Boss ficou com HP: %s", bigBoss.hp);
+        console.log("Boss atacou o Jogador. Jogador ficou com HP: %s", player.hp);
     }
 }
