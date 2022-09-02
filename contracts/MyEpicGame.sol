@@ -83,10 +83,10 @@ contract MyEpicGame is ERC721 {
 
             CharacterAttributes memory c = defaultCharacters[i];
             console.log(
-                "Personagem iniciado: %s - %s/%s",
+                "Personagem iniciado! Nome:%s HP:%s - Imagem:%s",
                 c.name,
                 c.hp,
-                c.attackDamage
+                c.imageURI
             );
         }
         _tokenIds.increment();
@@ -175,13 +175,13 @@ contract MyEpicGame is ERC721 {
             bigBoss.hp = bigBoss.hp - player.attackDamage;
         }
         // Permita que o boss ataque o jogador
-        if(player.hp > bigBoss.attackDamage) {
+        if(player.hp < bigBoss.attackDamage) {
             player.hp = 0;
         } else {
             player.hp = player.hp - bigBoss.attackDamage;
         }
 
-        console.log("Personagemr atacou o Boss. Boss ficou com HP: %s", bigBoss.hp);
+        console.log("Personagem atacou o Boss. Boss ficou com HP: %s", bigBoss.hp);
         console.log("Boss atacou o Jogador. Jogador ficou com HP: %s", player.hp);
     }
 }
