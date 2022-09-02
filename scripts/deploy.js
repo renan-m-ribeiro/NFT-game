@@ -1,36 +1,49 @@
 const main = async () => {
-    const gameContractFactory = await hre.ethers.getContractFactory("MyEpicGame");
-    const gameContract = await gameContractFactory.deploy(
-      ["Kenshin", "Sanosuke", "Yahiko"],
-          [
-              "https://imgur.com/pUV8yj0",
-              "https://imgur.com/I25flmU",
-              "https://imgur.com/LTJRjlZ",
-          ],
-      [100, 200, 25], // HP values
-      [100, 50, 25] // Attack damage values
-    );
+  const gameContractFactory = await hre.ethers.getContractFactory("MyEpicGame");
+  const gameContract = await gameContractFactory.deploy(
+    // Character names
+    [
+      "Kenshin",
+      "Sanosuke", 
+      "Yahiko"
+    ],
+    // Image URLs
+    [
+      "https://imgur.com/zhuB2jA.jpg", // Kenshin image
+      "https://imgur.com/e8ajrkv.jpg", // Sanosuke image
+      "https://imgur.com/YoaLu2h.jpg", // Yahiko image
+    ],
+    // HP values
+    [
+      150, // Kenshin HP
+      200, // Sanosuke HP
+      100 // Yahiko HP
+    ],
+    // Attack damage values
+    [
+      100, // Kenshin attack damage 
+      50, // Sanosuke attack damage 
+      150 // Yahiko attack damage
+    ],    
+    //Boss Attributes
+    "Death Samurai", // Boss name
+    "https://imgur.com/PcDaFG8.jpg", // Boss image
+    1000, // Boss HP
+    50 // Boss Attack damage
+  );
     await gameContract.deployed();
-    console.log("Contract deployed to:", gameContract.address);
+    console.log("Contrato deployado no endereço:", gameContract.address);
     
     let txn;
-    txn = await gameContract.mintCharacterNFT(0);
+    txn = await gameContract.mintCharacterNFT(1);
     await txn.wait();
     console.log("Mintou NFT #1");
-    txn = await gameContract.mintCharacterNFT(1);
+    
+    txn = await gameContract.attackBoss();
     await txn.wait();
-    console.log("Mintou NFT #2");
-    txn = await gameContract.mintCharacterNFT(2);
-    await txn.wait();
-    console.log("Mintou NFT #3");
-    txn = await gameContract.mintCharacterNFT(1);
-    await txn.wait();
-    console.log("Minted NFT #4");
 
-    console.log("Fim do deploy e mint!");
+    console.log("Done!");
 
-    let returnedTokenUri = await gameContract.tokenURI(1);
-    console.log("TokenURI:", returnedTokenUri);
   };
   
   const runMain = async () => {

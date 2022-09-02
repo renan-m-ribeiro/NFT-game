@@ -9,9 +9,9 @@ const main = async () => {
       ],
       // Image URLs
       [
-        "https://imgur.com/pUV8yj0", // Kenshin image
-        "https://imgur.com/I25flmU", // Sanosuke image
-        "https://imgur.com/LTJRjlZ", // Yahiko image
+        "https://imgur.com/zhuB2jA.jpg", // Kenshin image
+        "https://imgur.com/e8ajrkv.jpg", // Sanosuke image
+        "https://imgur.com/YoaLu2h.jpg", // Yahiko image
       ],
       // HP values
       [
@@ -34,17 +34,13 @@ const main = async () => {
     await gameContract.deployed();
     console.log("Contract deployed to:", gameContract.address);
     let txn;
-    txn = await gameContract.mintCharacterNFT(2);
+    txn = await gameContract.mintCharacterNFT(1);
     await txn.wait();
 
     txn = await gameContract.attackBoss();
     await txn.wait();
 
-    txn = await gameContract.attackBoss();
-    await txn.wait();
-
-    txn = await gameContract.attackBoss();
-    await txn.wait();
+    console.log("Done!");
 
     //let returnedTokenUri = await gameContract.tokenURI(1);
     //console.log("TokenURI:", returnedTokenUri);
